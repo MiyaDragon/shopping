@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -13,6 +14,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+/**
+ * 管理サイド
+ */
+Route::prefix('admin')->name('admin.')->group( function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 });
+
+/**
+ * リダイレクト
+ */
+Route::redirect('/admin', '/admin/home');
