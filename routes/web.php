@@ -18,7 +18,7 @@ use App\Http\Controllers\Admin\HomeController;
  * 管理サイド
  */
 Route::prefix('admin')->name('admin.')->group( function () {
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('/home', HomeController::class)->name('home');
 });
 
 /**
