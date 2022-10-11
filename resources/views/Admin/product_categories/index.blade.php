@@ -9,7 +9,7 @@
         </div>
         <div class="col-4">
             <select class="form-select" name="element">
-                @foreach(config('productCategories.element') as $key => $value)
+                @foreach(config('product_categories.element') as $key => $value)
                     <option value={{ $key }} @if((!empty(Request::get('element')) && Request::get('element') == $key))
                         selected @endif>{{ "並び替え：" . $value }}</option>
                 @endforeach
@@ -17,7 +17,7 @@
         </div>
         <div class="col-4">
             <select class="form-select" name="direction">
-                @foreach(config('productCategories.direction') as $key => $value)
+                @foreach(config('product_categories.direction') as $key => $value)
                     <option value={{ $key }} @if((!empty(Request::get('direction')) && Request::get('direction') == $key))
                     selected @endif>{{ "並び替え方向：" . $value }}</option>
                 @endforeach
@@ -25,7 +25,7 @@
         </div>
         <div class="col-2">
             <select class="form-select" name="count">
-                @foreach(config('productCategories.count') as $value)
+                @foreach(config('product_categories.count') as $value)
                     <option value={{ $value }} @if((!empty(Request::get('count')) && Request::get('count') == $value))
                     selected @endif>{{ "表示：" . $value . "件" }}</option>
                 @endforeach
