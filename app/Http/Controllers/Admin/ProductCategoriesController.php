@@ -52,10 +52,7 @@ class ProductCategoriesController extends Controller
      */
     public function store(StoreProductCategoryRequest $request): RedirectResponse
     {
-        $productCategory = new ProductCategory();
-        $productCategory->name = $request->name;
-        $productCategory->order_no = $request->order_no;
-        $productCategory->save();
+        $productCategory = ProductCategory::create($request->validated());
 
         return redirect()->route('admin.product_categories.show',
             ['product_category' => $productCategory]);
@@ -94,9 +91,7 @@ class ProductCategoriesController extends Controller
      */
     public function update(StoreProductCategoryRequest $request, ProductCategory $productCategory): RedirectResponse
     {
-        $productCategory->name = $request->name;
-        $productCategory->order_no = $request->order_no;
-        $productCategory->save();
+        $productCategory->update($request->validated());
 
         return redirect()->route('admin.product_categories.show',
             ['product_category' => $productCategory]);
