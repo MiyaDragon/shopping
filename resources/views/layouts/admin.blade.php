@@ -31,7 +31,8 @@
         <nav class="col-2 bg-light vh-100 border-end">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#">
+                    <a class="nav-link {{ url()->current() == route('admin.products.index')
+                        ? "text-primary" : "text-dark" }}" href="{{ route('admin.products.index') }}">
                         商品管理
                     </a>
                 </li>
