@@ -10,38 +10,37 @@ use App\Models\ProductCategory;
 use App\Consts\ProductsConst;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use App\Http\Requests\ProductIndexRequest;
 
 class ProductsController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @param Request $request
+     * @param ProductIndexRequest $request
      * @return View
      */
-    public function index(Request $request): View
+    public function index(ProductIndexRequest $request): View
     {
-        $category = $request->query('category') ?? ProductsConst::INITIAL_CATEGORY;
-        $keyword = $request->query('keyword') ?? ProductsConst::INITIAL_KEYWORD;
-        $price = $request->query('price') ?? ProductsConst::INITIAL_PRICE;
-        $aboveBelow = $request->query('aboveBelow') == 'under' ? ProductsConst::UNDER : ProductsConst::OVER;
-        $element = $request->query('element') ?? ProductsConst::INITIAL_ELEMENT;
-        $direction = $request->query('direction') ?? ProductsConst::INITIAL_DIRECTION;
-        $count = $request->query('count') ?? ProductsConst::INITIAL_COUNT;
-
         $products = Product::query();
-        if($category <> 'all') {
-            $products = $products->where('product_category_id', $category);
-        }
-        if($price <> '') {
-            $products = $products->where('price', $aboveBelow, $price);
-        }
-        if($keyword <> '') {
-            $products = $products->where('name', 'LIKE', '%'.$keyword.'%');
-        }
-        $products = $products->orderBy($element, $direction)->paginate($count);
+
+        // 商品カテゴリで検索
+        $products->when($request->category() <> 'all', function($query) use ($request){
+            return $query->where('product_category_id', $request->category());
+        });
+        // 名称で検索
+        $products->when($request->keyword() <> '', function($query) use ($request){
+            return $query->where('name', 'LIKE', '%' . $request->keyword() . '%');
+        });
+        // 価格で検索
+        $products->when($request->price() <> '', function($query) use ($request){
+            return $query->where('price', $request->aboveBelow(), $request->price());
+        });
+
+        $products = $products->orderBy($request->element(), $request->direction())->paginate($request->count());
 
         $productCategories = ProductCategory::all()->sortBy('order_no');
 
