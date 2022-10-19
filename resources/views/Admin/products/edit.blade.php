@@ -24,15 +24,15 @@
     </div>
     <div class="col-12 mt-3">
         <label class="form-label" for="name">名称</label>
-        <input type="text" class="form-control" id="name" name="name" placeholder="名称" value="{{ old('name') ?? $product->name }}">
+        <input type="text" class="form-control" id="name" name="name" placeholder="名称" value="{{ old('name', $product->name) }}">
     </div>
     <div class="col-12 mt-3">
         <label class="form-label" for="price">価格</label>
-        <input type="number" class="form-control" id="price" name="price" placeholder="価格" value="{{ old('price') ?? $product->price }}">
+        <input type="number" class="form-control" id="price" name="price" placeholder="価格" value="{{ old('price', $product->price) }}">
     </div>
     <div class="col-12 mt-3">
         <label class="form-label" for="description">説明</label>
-        <textarea class="form-control" id="description" rows="2" placeholder="説明" name="description">{{ old('description') ?? $product->description }}</textarea>
+        <textarea class="form-control" id="description" rows="2" placeholder="説明" name="description">{{ old('description', $product->description) }}</textarea>
     </div>
     <div class="col-12 mt-3">
         <label class="form-label" for="image">イメージ</label>

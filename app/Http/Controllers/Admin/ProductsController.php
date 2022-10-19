@@ -25,22 +25,27 @@ class ProductsController extends Controller
      */
     public function index(ProductIndexRequest $request): View
     {
-        $products = Product::query();
-
+        $getProductsQuery = Product::query()
         // 商品カテゴリで検索
-        $products->when($request->category() <> 'all', function($query) use ($request){
+        ->when($request->category() != 'all', function($query) use ($request){
             return $query->where('product_category_id', $request->category());
-        });
+        })
         // 名称で検索
-        $products->when($request->keyword() <> '', function($query) use ($request){
+        ->when($request->keyword() != '', function($query) use ($request){
             return $query->where('name', 'LIKE', '%' . $request->keyword() . '%');
-        });
+        })
         // 価格で検索
-        $products->when($request->price() <> '', function($query) use ($request){
+        ->when($request->price() != '', function($query) use ($request){
             return $query->where('price', $request->aboveBelow(), $request->price());
-        });
+        })
+        // リレーション先カラムを使って並び替えする場合
+        ->when($request->element() == 'order_no', function($query){
+            return $query->with('productCategory')
+                ->select('products.*', DB::raw('(SELECT order_no FROM product_categories WHERE products.product_category_id = product_categories.id ) as order_no'));
+        })
+        ->orderBy($request->element(), $request->direction());
 
-        $products = $products->orderBy($request->element(), $request->direction())->paginate($request->count());
+        $products = $getProductsQuery->paginate($request->count());
 
         $productCategories = ProductCategory::all()->sortBy('order_no');
 
