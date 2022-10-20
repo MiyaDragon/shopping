@@ -10,7 +10,6 @@ use App\Models\ProductCategory;
 use App\Consts\ProductsConst;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use App\Http\Requests\ProductIndexRequest;
@@ -38,12 +37,16 @@ class ProductsController extends Controller
         ->when($request->price() != '', function($query) use ($request){
             return $query->where('price', $request->aboveBelow(), $request->price());
         })
-        // リレーション先カラムを使って並び替えする場合
-        ->when($request->element() == 'order_no', function($query){
-            return $query->with('productCategory')
-                ->select('products.*', DB::raw('(SELECT order_no FROM product_categories WHERE products.product_category_id = product_categories.id ) as order_no'));
+        // 並び替え
+        ->when($request->element() == 'order_no', function($query) use ($request){
+            return $query->join('product_categories', 'product_categories.id', '=', 'products.product_category_id')
+                ->select('products.*')
+                ->orderBy('product_categories.order_no', $request->direction())
+                ->orderBy('products.id', 'asc');
         })
-        ->orderBy($request->element(), $request->direction());
+        ->when($request->element() != 'order_no', function($query) use ($request){
+            return $query->orderBy($request->element(), $request->direction());
+        });
 
         $products = $getProductsQuery->paginate($request->count());
 

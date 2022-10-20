@@ -3,7 +3,7 @@
 return [
     'element' => [
         'id' => 'ID',
-        'order_no' => '商品カテゴリ.ソート番号',
+        'order_no' => '商品カテゴリ',
         'name' => '名称',
         'price' => '価格',
     ],
