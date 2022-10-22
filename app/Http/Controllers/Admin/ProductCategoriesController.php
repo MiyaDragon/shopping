@@ -105,7 +105,11 @@ class ProductCategoriesController extends Controller
      */
     public function destroy(ProductCategory  $productCategory): RedirectResponse
     {
-        $productCategory->delete();
+        if($productCategory->product->count() === 0) {
+            $productCategory->delete();
+        }else {
+            abort(403);
+        }
 
         return redirect()->route('admin.product_categories.index');
     }

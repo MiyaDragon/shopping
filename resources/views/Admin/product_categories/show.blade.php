@@ -4,11 +4,13 @@
 <div class="col-12 my-3 d-flex gap-2">
     <a href="{{ route('admin.product_categories.index') }}" class="btn btn-white me-2">一覧</a>
     <a href="{{ route('admin.product_categories.edit', ['product_category' => $productCategory]) }}" class="btn btn-success">編集</a>
+    @if($productCategory->product->count() === 0)
     <form method="POST" action="{{ route('admin.product_categories.destroy', ['product_category' => $productCategory]) }}">
         @csrf
         @method('delete')
         <button type="submit" class="btn btn-danger">削除</button>
     </form>
+    @endif
 </div>
 
 <div class="col-12">
