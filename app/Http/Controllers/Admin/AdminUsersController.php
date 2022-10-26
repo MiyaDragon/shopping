@@ -14,6 +14,13 @@ use Illuminate\View\View;
 
 class AdminUsersController extends Controller
 {
+    private $adminUser;
+
+    public function __construct(AdminUser $adminUser)
+    {
+        $this->adminUser = $adminUser;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -49,7 +56,9 @@ class AdminUsersController extends Controller
      */
     public function create(): View
     {
-        return view('admin.admin_users.create');
+        $adminUser = $this->adminUser;
+
+        return view('admin.admin_users.create', ['adminUser' => $adminUser]);
     }
 
     /**
