@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ProductCategoriesController;
 use App\Http\Controllers\Admin\ProductsController;
+use App\Http\Controllers\Admin\AdminUsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +26,7 @@ Route::prefix('admin')->name('admin.')->group( function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('/product_categories', ProductCategoriesController::class);
     Route::resource('/products', ProductsController::class);
+    Route::resource('/admin_users', AdminUsersController::class);
 });
 
 /**
