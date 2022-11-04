@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ProductCategoriesController;
 use App\Http\Controllers\Admin\ProductsController;
 use App\Http\Controllers\Admin\AdminUsersController;
+use App\Http\Controllers\Admin\UsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::resource('/product_categories', ProductCategoriesController::class);
     Route::resource('/products', ProductsController::class);
     Route::resource('/admin_users', AdminUsersController::class);
+    Route::resource('/users', UsersController::class);
 });
 
 /**

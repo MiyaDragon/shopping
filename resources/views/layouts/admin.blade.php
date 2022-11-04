@@ -43,7 +43,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#">
+                    <a class="nav-link {{ url()->current() == route('admin.users.index')
+                        ? "text-primary" : "text-dark" }}" href="{{ route('admin.users.index') }}">
                         顧客管理
                     </a>
                 </li>
