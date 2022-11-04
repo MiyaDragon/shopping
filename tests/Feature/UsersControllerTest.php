@@ -31,8 +31,6 @@ class UsersControllerTest extends TestCase
     public function testCreate(): void
     {
         // 顧客作成ページへ遷移
-//        $response = $this->actingAs($this->user, 'admin')
-//            ->get(route('admin.users.create'));
         $response = $this->get(route('admin.users.create'));
 
         // 遷移先が顧客作成ページであるか確認
@@ -69,8 +67,6 @@ class UsersControllerTest extends TestCase
     public function testUpdate(): void
     {
         // 顧客編集ページへ遷移
-//        $response = $this->actingAs($this->user, 'admin')
-//            ->get(route('admin.users.edit', ['user' => $this->user]));
         $response = $this->get(route('admin.users.edit', ['user' => $this->user]));
 
         // 遷移先が顧客編集ページであるか確認
@@ -107,8 +103,6 @@ class UsersControllerTest extends TestCase
     public function testDelete(): void
     {
         // 顧客編集ページへ遷移
-//        $response = $this->actingAs($this->user, 'admin')
-//            ->get(route('admin.users.edit', ['user' => $this->user]));
         $response = $this->get(route('admin.users.edit', ['user' => $this->user]));
 
         // 遷移先が顧客編集ページであるか確認
