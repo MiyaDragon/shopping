@@ -13,13 +13,18 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        オーナー管理者
+                        {{ Auth::User()->name }}
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                        <li><a class="dropdown-item" href="#">管理者情報</a></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.admin_users.show', ['admin_user' => Auth::User()]) }}">管理者情報</a>
+                        </li>
                         <div class="dropdown-divider"></div>
-                        <li><a class="dropdown-item" href="#">ログアウト</a></li>
+                        <li><button class="dropdown-item" form="logout_btn">ログアウト</button></li>
                     </ul>
+                    <form method="POST" action="{{ route('admin.logout') }}" id="logout_btn">
+                        @csrf
+                    </form>
                 </li>
             </ul>
         </div>
@@ -48,12 +53,14 @@
                         顧客管理
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ url()->current() == route('admin.admin_users.index')
-                        ? "text-primary" : "text-dark" }}" href="{{ route('admin.admin_users.index') }}">
-                        管理者管理
-                    </a>
-                </li>
+                @if (Auth::User()->is_owner)
+                    <li class="nav-item">
+                        <a class="nav-link {{ url()->current() == route('admin.admin_users.index')
+                            ? "text-primary" : "text-dark" }}" href="{{ route('admin.admin_users.index') }}">
+                            管理者管理
+                        </a>
+                    </li>
+                @endif
             </ul>
         </nav>
         <div class="col-md-10">

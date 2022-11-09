@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductCategoryIndexRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -12,23 +13,31 @@ use App\Http\Requests\StoreProductCategoryRequest;
 
 class ProductCategoriesController extends Controller
 {
+    private ProductCategory $productCategory;
+
+    public function __construct(ProductCategory $productCategory)
+    {
+        $this->productCategory = $productCategory;
+    }
+
     /**
      * Display a listing of the resource.
      *
-     * @param  Request  $request
+     * @param ProductCategoryIndexRequest $request
      *
      * @return view
      */
-    public function index(Request $request): View
+    public function index(ProductCategoryIndexRequest $request): View
     {
-        $keyword = $request->query('keyword') ?? '';
-        $element = $request->query('element') ?? 'id';
-        $direction = $request->query('direction') ?? 'asc';
-        $count = $request->query('count') ?? 10;
+        $getProductCategoriesQuery = ProductCategory::query()
+            // 名称で検索
+            ->when($request->keyword() != '', function($query) use ($request) {
+                return $query->where('name', 'LIKE', '%' . $request->keyword() . '%');
+            })
+            // 並び替え
+            ->orderBy($request->element(), $request->direction());
 
-        $productCategories = ProductCategory::where('name', 'LIKE', '%'.$keyword.'%')
-                            ->orderBy($element, $direction)
-                            ->paginate($count);
+        $productCategories = $getProductCategoriesQuery->paginate($request->count());
 
         return view('admin.product_categories.index',
             ['productCategories' => $productCategories]);
@@ -41,7 +50,10 @@ class ProductCategoriesController extends Controller
      */
     public function create(): View
     {
-        return view('admin.product_categories.create');
+        $productCategory = $this->productCategory;
+
+        return view('admin.product_categories.create',
+            ['productCategory' => $productCategory]);
     }
 
     /**
@@ -105,9 +117,9 @@ class ProductCategoriesController extends Controller
      */
     public function destroy(ProductCategory  $productCategory): RedirectResponse
     {
-        if($productCategory->product->count() === 0) {
+        if ($productCategory->product->count() === 0) {
             $productCategory->delete();
-        }else {
+        } else {
             abort(403);
         }
 

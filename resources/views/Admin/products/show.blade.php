@@ -37,7 +37,7 @@
             <tr>
                 <th scope="row">イメージ</th>
                 <td>
-                    <img src="{{ asset('storage/' . $product->image_path) }}" alt="画像" style="width: 70%;">
+                    <img src="{{ asset('storage/' . $product->image_path) }}" alt="画像">
                 </td>
             </tr>
             </tbody>

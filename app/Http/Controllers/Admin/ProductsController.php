@@ -16,6 +16,13 @@ use App\Http\Requests\ProductIndexRequest;
 
 class ProductsController extends Controller
 {
+    private Product $product;
+
+    public function __construct(Product $product)
+    {
+        $this->product = $product;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -25,28 +32,28 @@ class ProductsController extends Controller
     public function index(ProductIndexRequest $request): View
     {
         $getProductsQuery = Product::query()
-        // 商品カテゴリで検索
-        ->when($request->category() != 'all', function($query) use ($request){
-            return $query->where('product_category_id', $request->category());
-        })
-        // 名称で検索
-        ->when($request->keyword() != '', function($query) use ($request){
-            return $query->where('name', 'LIKE', '%' . $request->keyword() . '%');
-        })
-        // 価格で検索
-        ->when($request->price() != '', function($query) use ($request){
-            return $query->where('price', $request->aboveBelow(), $request->price());
-        })
-        // 並び替え
-        ->when($request->element() == 'order_no', function($query) use ($request){
-            return $query->join('product_categories', 'product_categories.id', '=', 'products.product_category_id')
-                ->select('products.*')
-                ->orderBy('product_categories.order_no', $request->direction())
-                ->orderBy('products.id', 'asc');
-        })
-        ->when($request->element() != 'order_no', function($query) use ($request){
-            return $query->orderBy($request->element(), $request->direction());
-        });
+            // 商品カテゴリで検索
+            ->when($request->category() != 'all', function($query) use ($request) {
+                return $query->where('product_category_id', $request->category());
+            })
+            // 名称で検索
+            ->when($request->keyword() != '', function($query) use ($request) {
+                return $query->where('name', 'LIKE', '%' . $request->keyword() . '%');
+            })
+            // 価格で検索
+            ->when($request->price() != '', function($query) use ($request) {
+                return $query->where('price', $request->aboveBelow(), $request->price());
+            })
+            // 並び替え
+            ->when($request->element() == 'order_no', function($query) use ($request) {
+                return $query->join('product_categories', 'product_categories.id', '=', 'products.product_category_id')
+                    ->select('products.*')
+                    ->orderBy('product_categories.order_no', $request->direction())
+                    ->orderBy('products.id', 'asc');
+            })
+            ->when($request->element() != 'order_no', function($query) use ($request) {
+                return $query->orderBy($request->element(), $request->direction());
+            });
 
         $products = $getProductsQuery->paginate($request->count());
 
@@ -65,9 +72,14 @@ class ProductsController extends Controller
      */
     public function create(): View
     {
+        $product = $this->product;
+
         $productCategories = ProductCategory::all()->sortBy('order_no');
 
-        return view('admin.products.create', ['productCategories' => $productCategories]);
+        return view('admin.products.create', [
+            'product' => $product,
+            'productCategories' => $productCategories
+        ]);
     }
 
     /**
@@ -80,10 +92,10 @@ class ProductsController extends Controller
     {
         $product = Product::create($request->validated());
 
-        if(!empty($request->file('image_path'))) {
+        if (filled($request->file('image_path'))) {
             $file = $request->file('image_path');
             $file_name = $file->hashName();
-            Storage::disk("public")
+            Storage::disk(ProductsConst::DISK)
                 ->putFileAs(ProductsConst::DIR, $request->file('image_path'), $file_name);
             $product->image_path = ProductsConst::DIR . '/' . $file_name;
             $product->save();
@@ -128,14 +140,18 @@ class ProductsController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product): RedirectResponse
     {
-        if(!empty($request->delete)) {
+        // チェックボックスにチェックがある場合はイメージを削除
+        if (filled($request->delete)) {
             Storage::disk(ProductsConst::DISK)->delete($product->image_path);
         }
 
         $product->update($request->validated());
 
-        if(!empty($request->file('image_path'))) {
-            Storage::disk(ProductsConst::DISK)->delete($product->image_path);
+        if (filled($request->file('image_path'))) {
+            // 古いイメージがある場合は削除
+            if (Storage::disk(ProductsConst::DISK)->exists($product->image_path)) {
+                Storage::disk(ProductsConst::DISK)->delete($product->image_path);
+            }
             $file = $request->file('image_path');
             $file_name = $file->hashName();
             Storage::disk(ProductsConst::DISK)
@@ -144,8 +160,7 @@ class ProductsController extends Controller
             $product->save();
         }
 
-        return redirect()->route('admin.products.show',
-            ['product' => $product]);
+        return redirect()->route('admin.products.show', ['product' => $product]);
     }
 
     /**
@@ -156,7 +171,7 @@ class ProductsController extends Controller
      */
     public function destroy(Product $product): RedirectResponse
     {
-        if(!empty($product->image_path)) {
+        if (filled($product->image_path)) {
             Storage::disk(ProductsConst::DISK)->delete($product->image_path);
         }
 
