@@ -85,5 +85,5 @@
         </tbody>
     </table>
 </div>
-{{ $products->links() }}
+{{ $products->appends(request()->input())->links() }}
 @endsection

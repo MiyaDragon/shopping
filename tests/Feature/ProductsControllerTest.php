@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\AdminUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
@@ -20,6 +21,7 @@ class ProductsControllerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        $this->adminUser = AdminUser::factory()->create();
         $this->productCategory = ProductCategory::factory()->create();
         $this->product = Product::factory()->create(['product_category_id' => $this->productCategory->id]);
     }
@@ -32,7 +34,8 @@ class ProductsControllerTest extends TestCase
     public function testCreate(): void
     {
         // 商品作成ページへ遷移
-        $response = $this->get(route('admin.products.create'));
+        $response = $this->actingAs($this->adminUser, 'admin')
+            ->get(route('admin.products.create'));
 
         // 遷移先が商品作成ページであるか確認
         $response->assertStatus(200);
@@ -69,9 +72,8 @@ class ProductsControllerTest extends TestCase
     public function testUpdate(): void
     {
         // 商品編集ページへ遷移
-        $response = $this->get(route('admin.products.edit', [
-            'product' => $this->product,
-        ]));
+        $response = $this->actingAs($this->adminUser, 'admin')
+            ->get(route('admin.products.edit', ['product' => $this->product]));
 
         // 遷移先が商品編集ページであるか確認
         $response->assertStatus(200);
@@ -107,9 +109,8 @@ class ProductsControllerTest extends TestCase
     public function testDelete(): void
     {
         // 商品編集ページへ遷移
-        $response = $this->get(route('admin.products.edit', [
-            'product' => $this->product,
-        ]));
+        $response = $this->actingAs($this->adminUser, 'admin')
+            ->get(route('admin.products.edit', ['product' => $this->product]));
 
         // 遷移先が商品編集ページであるか確認
         $response->assertStatus(200);

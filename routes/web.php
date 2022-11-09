@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\ProductCategoriesController;
@@ -21,14 +22,20 @@ use App\Http\Controllers\Admin\UsersController;
 /**
  * 管理サイド
  */
-Route::prefix('admin')->name('admin.')->group( function () {
-    Route::get('/home', HomeController::class)->name('home');
-});
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::resource('/product_categories', ProductCategoriesController::class);
-    Route::resource('/products', ProductsController::class);
-    Route::resource('/admin_users', AdminUsersController::class);
-    Route::resource('/users', UsersController::class);
+Route::namespace('App\Http\Controllers\Admin')->prefix('admin')->name('admin.')->group(function () {
+    Auth::routes([
+        'register' => false,
+        'reset' => false,
+        'verify' => false,
+    ]);
+    Route::middleware('auth:admin')->group(function () {
+        Route::get('/home', HomeController::class)->name('home');
+        Route::resource('/product_categories', ProductCategoriesController::class);
+        Route::resource('/products', ProductsController::class);
+        Route::resource('/admin_users', AdminUsersController::class);
+        Route::resource('/users', UsersController::class);
+    });
+
 });
 
 /**

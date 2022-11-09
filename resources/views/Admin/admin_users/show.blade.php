@@ -2,13 +2,17 @@
 
 @section('adminContent')
 <div class="col-12 my-3 d-flex gap-2">
-    <a href="{{ route('admin.admin_users.index') }}" class="btn btn-white me-2">一覧</a>
+    @if (Auth::User()->is_owner)
+        <a href="{{ route('admin.admin_users.index') }}" class="btn btn-white me-2">一覧</a>
+    @endif
     <a href="{{ route('admin.admin_users.edit', ['admin_user' => $adminUser]) }}" class="btn btn-success">編集</a>
-    <form method="POST" action="{{ route('admin.admin_users.destroy', ['admin_user' => $adminUser]) }}">
-        @csrf
-        @method('delete')
-        <button type="submit" class="btn btn-danger">削除</button>
-    </form>
+    @if (Auth::User()->is_owner && Auth::User() != $adminUser)
+        <form method="POST" action="{{ route('admin.admin_users.destroy', ['admin_user' => $adminUser]) }}">
+            @csrf
+            @method('delete')
+            <button type="submit" class="btn btn-danger">削除</button>
+        </form>
+    @endif
 </div>
 
 <div class="col-12">

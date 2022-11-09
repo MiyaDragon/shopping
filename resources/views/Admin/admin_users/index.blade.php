@@ -85,5 +85,5 @@
         </tbody>
     </table>
 </div>
-{{ $adminUsers->links() }}
+{{ $adminUsers->appends(request()->input())->links() }}
 @endsection

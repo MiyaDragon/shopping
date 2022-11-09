@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\AdminUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -19,6 +20,7 @@ class ProductCategoriesControllerTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
+        $this->adminUser = AdminUser::factory()->create();
         $this->productCategory = ProductCategory::factory()->create();
     }
 
@@ -30,7 +32,8 @@ class ProductCategoriesControllerTest extends TestCase
     public function testCreate(): void
     {
         // 商品カテゴリ作成ページへ遷移
-        $response = $this->get(route('admin.product_categories.create'));
+        $response = $this->actingAs($this->adminUser, 'admin')
+            ->get(route('admin.product_categories.create'));
 
         // 遷移先が商品カテゴリ作成ページであるか確認
         $response->assertStatus(200);
@@ -63,8 +66,8 @@ class ProductCategoriesControllerTest extends TestCase
     public function testUpdate(): void
     {
         // 商品カテゴリ編集ページへ遷移
-        $response = $this->get(route('admin.product_categories.edit',
-            ['product_category' => $this->productCategory]));
+        $response = $this->actingAs($this->adminUser, 'admin')
+            ->get(route('admin.product_categories.edit', ['product_category' => $this->productCategory]));
 
         // 遷移先が商品カテゴリ編集ページであるか確認
         $response->assertStatus(200);
@@ -97,8 +100,8 @@ class ProductCategoriesControllerTest extends TestCase
     public function testDelete(): void
     {
         // 商品カテゴリ編集ページへ遷移
-        $response = $this->get(route('admin.product_categories.edit',
-            ['product_category' => $this->productCategory]));
+        $response = $this->actingAs($this->adminUser, 'admin')
+            ->get(route('admin.product_categories.edit', ['product_category' => $this->productCategory]));
 
         // 遷移先が商品カテゴリ編集ページであるか確認
         $response->assertStatus(200);

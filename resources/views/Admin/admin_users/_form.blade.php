@@ -24,13 +24,20 @@
     <label class="form-label" for="password_confirmation">パスワード(確認)</label>
     <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="パスワード(確認)">
 </div>
-<div class="col-12 mt-3">
-    <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="is_owner" id="general" value="0" checked>
-        <label class="form-check-label" for="general">一般</label>
+@if (Auth::User()->is_owner && Auth::User() != $adminUser)
+    <div class="col-12 mt-3">
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="is_owner" id="general" value="0" checked>
+            <label class="form-check-label" for="general">一般</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="is_owner" id="owner" value="1" @if($adminUser->is_owner) checked @endif>
+            <label class="form-check-label" for="owner">オーナー</label>
+        </div>
     </div>
-    <div class="form-check form-check-inline">
-        <input class="form-check-input" type="radio" name="is_owner" id="owner" value="1" @if($adminUser->is_owner) checked @endif>
-        <label class="form-check-label" for="owner">オーナー</label>
+@else
+    <div class="col-12 mt-3">
+        <label class="form-check-label">{{ $adminUser->is_owner ? 'オーナー' : '一般' }}</label>
+        <input type="hidden" name="is_owner" value="{{ $adminUser->is_owner ?? 0 }}">
     </div>
-</div>
+@endif

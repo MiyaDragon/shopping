@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 use App\Models\AdminUser;
 
@@ -31,7 +30,8 @@ class AdminUsersControllerTest extends TestCase
     public function testCreate(): void
     {
         // 管理者作成ページへ遷移
-        $response = $this->get(route('admin.admin_users.create'));
+        $response = $this->actingAs($this->adminUser, 'admin')
+            ->get(route('admin.admin_users.create'));
 
         // 遷移先が管理者作成ページであるか確認
         $response->assertStatus(200);
@@ -67,9 +67,8 @@ class AdminUsersControllerTest extends TestCase
     public function testUpdate(): void
     {
         // 管理者編集ページへ遷移
-        $response = $this->get(route('admin.admin_users.edit', [
-            'admin_user' => $this->adminUser,
-        ]));
+        $response = $this->actingAs($this->adminUser, 'admin')
+            ->get(route('admin.admin_users.edit', ['admin_user' => $this->adminUser]));
 
         // 遷移先が管理者編集ページであるか確認
         $response->assertStatus(200);
@@ -105,9 +104,8 @@ class AdminUsersControllerTest extends TestCase
     public function testDelete(): void
     {
         // 管理者編集ページへ遷移
-        $response = $this->get(route('admin.admin_users.edit', [
-            'admin_user' => $this->adminUser,
-        ]));
+        $response = $this->actingAs($this->adminUser, 'admin')
+            ->get(route('admin.admin_users.edit', ['admin_user' => $this->adminUser]));
 
         // 遷移先が管理者編集ページであるか確認
         $response->assertStatus(200);

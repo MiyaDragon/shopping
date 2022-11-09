@@ -9,16 +9,18 @@ use App\Http\Requests\UpdateAdminUserRequest;
 use App\Models\AdminUser;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class AdminUsersController extends Controller
 {
-    private $adminUser;
+    private AdminUser $adminUser;
 
     public function __construct(AdminUser $adminUser)
     {
         $this->adminUser = $adminUser;
+        $this->authorizeResource(AdminUser::class, 'admin_user');
     }
 
     /**
@@ -113,12 +115,13 @@ class AdminUsersController extends Controller
         $adminUser->update([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => blank($request->password) ? $adminUser->password : Hash::make($request->password),
-            'is_owner' => $request->is_owner,
+            'password' => blank($request->password) ?
+                $adminUser->password : Hash::make($request->password),
+            'is_owner' => Auth::User()->is_owner ?
+                $request->is_owner : 0,
         ]);
 
         return redirect()->route('admin.admin_users.show', ['admin_user' => $adminUser]);
-
     }
 
     /**
@@ -129,7 +132,11 @@ class AdminUsersController extends Controller
      */
     public function destroy(AdminUser $adminUser): RedirectResponse
     {
-        $adminUser->delete();
+        if (Auth::User() != $adminUser) {
+            $adminUser->delete();
+        } else {
+            abort(403);
+        }
 
         return redirect()->route('admin.admin_users.index');
     }
